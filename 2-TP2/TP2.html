@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des personnes</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    fieldset {
+      margin-bottom: 15px;
+      padding: 10px;
+    }
+
+    .personne {
+      clear: left;
+      padding: 1rem;
+      border-bottom: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background-color: #f0f8ff;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .personne.miseEnForme {
+      background-color: #e6ffe6;
+      font-family: Georgia, serif;
+      font-size: 1.1rem;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .personne img {
+      border-radius: 50%;
+      object-fit: cover;
+      float: left;
+      margin-right: 1rem;
+    }
+
+    button {
+      margin-top: 5px;
+      padding: 3px 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <fieldset>
+      <legend>Filtre sur le nom</legend>
+      <input type="text" v-model="filtreNom" placeholder="Tapez le nom">
+    </fieldset>
+
+    <fieldset>
+      <legend>Options</legend>
+      Homme <input type="checkbox" v-model="homme">
+      Femme <input type="checkbox" v-model="femme">
+      Téléphone <input type="checkbox" v-model="tel">
+      Photo
+      <select v-model="tailleImage">
+        <option value="petit">Petit</option>
+        <option value="moyen">Moyen</option>
+        <option value="grand">Grand</option>
+      </select>
+      Mise en forme <input type="checkbox" v-model="miseEnForme">
+    </fieldset>
+
+    <div class="personne" 
+         v-for="(p, index) in personnesFiltrees" 
+         :key="p.email"
+         :class="{ miseEnForme: miseEnForme }">
+      <img :src="p.picture.medium" 
+           :alt="p.name.first + ' ' + p.name.last"
+           :width="imageWidth" 
+           :height="imageWidth">
+      <div>
+        <div><strong>{{p.name.title}} {{p.name.first}} {{p.name.last}}</strong></div>
+        <div>Pays: {{p.location.country}}</div>
+        <button @click="p.showContact = !p.showContact">
+          {{ p.showContact ? 'Cacher contact' : 'Afficher contact' }}
+        </button>
+        <div v-if="p.showContact">
+          <div v-if="tel">Tel: {{p.phone}}</div>
+          <div>Email: {{p.email}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          homme: true,
+          femme: true,
+          tel: true,
+          filtreNom: '',
+          tailleImage: 'moyen',
+          miseEnForme: false,
+          personnes: [
+            {
+              gender: "female",
+              name: { title: "Mrs", first: "Elizabeth", last: "Ambrose" },
+              location: { country: "Canada" },
+              email: "elizabeth.ambrose@example.com",
+              phone: "366-033-8063",
+              picture: { medium: "https://randomuser.me/api/portraits/med/women/49.jpg" },
+              showContact: false
+            },
+            {
+              gender: "male",
+              name: { title: "Mr", first: "Batista", last: "Silveira" },
+              location: { country: "Brazil" },
+              email: "batista.silveira@example.com",
+              phone: "(53) 5553-2892",
+              picture: { medium: "https://randomuser.me/api/portraits/med/men/50.jpg" },
+              showContact: false
+            },
+            {
+              gender: "male",
+              name: { title: "Mr", first: "Blaise", last: "Adam" },
+              location: { country: "Switzerland" },
+              email: "blaise.adam@example.com",
+              phone: "079 493 00 77",
+              picture: { medium: "https://randomuser.me/api/portraits/med/men/29.jpg" },
+              showContact: false
+            }
+          ]
+        }
+      },
+      computed: {
+        personnesFiltrees() {
+          return this.personnes.filter(p => {
+            const genreOk = (this.homme && p.gender === 'male') || (this.femme && p.gender === 'female');
+            const nomOk = p.name.last.toLowerCase().includes(this.filtreNom.toLowerCase());
+            return genreOk && (nomOk || this.filtreNom === '');
+          });
+        },
+        imageWidth() {
+          switch (this.tailleImage) {
+            case 'petit': return 50;
+            case 'moyen': return 80;
+            case 'grand': return 120;
+            default: return 80;
+          }
+        }
+      }
+    });
+    app.mount('#app');
+  </script>
+</body>
+</html>

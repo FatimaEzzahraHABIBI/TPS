@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Manipulation de vue</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+
+  <div id="monapp">
+    <h3>Couleur de la police:</h3>
+    <label><input type="radio" value="red" v-model="couleur"> Rouge</label><br>
+    <label><input type="radio" value="blue" v-model="couleur"> Bleu</label>
+
+    <h3>Afficher/cacher le paragraphe ?</h3>
+    <label><input type="checkbox" v-model="afficher"> Afficher / cacher</label>
+
+    <p v-show="afficher" :style="{ color: couleur }">
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+      Suscipit expedita adipisci rerum! Laborum illum unde architecto a, 
+      praesentium labore consequatur veniam officiis dolor iste repudiandae 
+      modi harum ipsam. Inventore, nisi?
+    </p>
+  </div>
+
+  <script>
+    const appli = {
+      data() {
+        return {
+          couleur: "red",  
+          afficher: false 
+        };
+      }
+    };
+
+    Vue.createApp(appli).mount("#monapp");
+  </script>
+
+</body>
+</html>
